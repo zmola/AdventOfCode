@@ -1,0 +1,42 @@
+[0m2021.12.02 19:15:54 INFO  Started: Metals version 0.10.9 in workspace 'C:\Users\Carn\go\src\aoc\2021' for client Visual Studio Code 1.62.3.[0m
+[0m2021.12.02 19:15:55 INFO  time: initialize in 0.86s[0m
+[0m2021.12.02 19:15:56 WARN  Build server is not auto-connectable.[0m
+[0m2021.12.02 19:15:56 WARN  no build tool detected in workspace 'C:\Users\Carn\go\src\aoc\2021'. The most common cause for this problem is that the editor was opened in the wrong working directory, for example if you use sbt then the workspace directory should contain build.sbt. [0m
+Dec 03, 2021 12:33:12 AM org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+INFO: Unsupported notification method: $/setTrace
+Dec 03, 2021 2:40:50 AM org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+INFO: Unsupported notification method: $/setTrace
+Dec 03, 2021 2:40:51 AM org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+INFO: Unsupported notification method: $/setTrace
+Dec 04, 2021 9:34:43 AM org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+INFO: Unsupported notification method: $/setTrace
+Dec 04, 2021 9:34:44 AM org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+INFO: Unsupported notification method: $/setTrace
+Dec 04, 2021 9:34:46 AM org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+INFO: Unsupported notification method: $/setTrace
+Dec 04, 2021 9:35:22 AM org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+INFO: Unsupported notification method: $/setTrace
+[0m2021.12.04 09:37:53 INFO  shutting down Metals[0m
+[0m2021.12.04 09:38:46 INFO  Started: Metals version 0.10.9 in workspace 'C:\Users\Carn\go\src\aoc\2021' for client Visual Studio Code 1.62.3.[0m
+[0m2021.12.04 09:38:47 INFO  time: initialize in 1.05s[0m
+[0m2021.12.04 09:38:48 WARN  Build server is not auto-connectable.[0m
+[0m2021.12.04 09:38:48 WARN  no build tool detected in workspace 'C:\Users\Carn\go\src\aoc\2021'. The most common cause for this problem is that the editor was opened in the wrong working directory, for example if you use sbt then the workspace directory should contain build.sbt. [0m
+Dec 04, 2021 10:29:18 AM org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+INFO: Unsupported notification method: $/setTrace
+Dec 04, 2021 10:30:45 AM org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+INFO: Unsupported notification method: $/setTrace
+Dec 04, 2021 10:53:17 AM org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+INFO: Unsupported notification method: $/setTrace
+Dec 04, 2021 10:53:34 AM org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+INFO: Unsupported notification method: $/setTrace
+Dec 04, 2021 12:04:41 PM org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+INFO: Unsupported notification method: $/setTrace
+Dec 04, 2021 12:18:08 PM org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+INFO: Unsupported notification method: $/setTrace
+Dec 04, 2021 12:18:10 PM org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+INFO: Unsupported notification method: $/setTrace
+Dec 04, 2021 12:18:11 PM org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+INFO: Unsupported notification method: $/setTrace
+Dec 04, 2021 12:26:20 PM org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+INFO: Unsupported notification method: $/setTrace
+[0m2021.12.04 12:26:37 INFO  shutting down Metals[0m

@@ -16,7 +16,7 @@ tstinput='''00100
 
 lines = tstinput
 input = open('input.3.1.txt','r').readlines()
-lines = [x.strip for x in input ]
+lines = [x.strip() for x in input ]
 digits = len(lines[0])
 
 def calcfreq(lines):
@@ -90,7 +90,7 @@ for i in range(digits):
     for l in lines:
        if l[i]==freqchr[i]:
            rtn=l
-           print(l,freqchr[i],i)
+           # print(l,freqchr[i],i)
            newlines.append(l)
     lines=newlines
 print(newlines)
@@ -111,7 +111,7 @@ for i in range(digits):
     for l in lines:
        if l[i]!=freqchr[i]:
             rtn=l
-            print(l,freqchr[i],i)
+            #print(l,freqchr[i],i)
             newlines.append(l)
     lines=newlines
 print(newlines)

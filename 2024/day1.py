@@ -1,6 +1,5 @@
 
 day=1
-
 part=1
 
 def read_input(day=day,part=part):

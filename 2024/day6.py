@@ -1,3 +1,5 @@
+import copy
+
 day=6
 part=1
 
@@ -28,18 +30,6 @@ samp ='''....#.....
 
 s = [list(x) for x in samp]
 
-# def findstart(s):
-#     for i in range(len(s)):
-#         for j in range(len(s[i])):
-#             if s[i][j] == '^':
-#                 return (i,j,'^')
-#     return False
-            
-# (y,x,dirchar) = findstart(s)
-# pos=[y,x]
-# dir=[-1,0]
-
-
 class Point:
     def __init__(self,x=0,y=0):
        self.x=x
@@ -64,14 +54,35 @@ class Point:
 
 class Guard(Point):
     def __init__(self, pos: Point, dir: Point):
-        self.pos=pos
-        self.dir=dir
+        self.pos=Point(pos.x,pos.y)
+        self.dir=Point(dir.x,dir.y)
+        self.name = 'x'
 
     def __eq__(self,g):
         return (self.pos == g.pos) and (self.dir == g.dir)
-    
+
+
+    def __repr__(self):
+        return(f"Pos({self.pos.x},{self.pos.y}),dir({self.dir.x},{self.dir.y})")
+
+    def __copy__(self):
+        return(Guard(Point(self.pos),Point(self.dir)))
+
     def nextStep(self):
         return self.pos + self.dir
+    
+    def move(self):
+        self.pos = self.pos + self.dir
+
+    def turnright(self):
+        # print('turn',self.name, self.dir)
+        if self.dir.x == 0:
+            self.dir.x = -self.dir.y
+            self.dir.y = 0
+        else:
+            self.dir.y = self.dir.x
+            self.dir.x = 0
+        # print('turn',self.dir)
 
 
 class Map:
@@ -79,18 +90,20 @@ class Map:
         self.m[p.y][p.x] = 'X'
 
     def __init__(self,m):
-        self.m=m
-        (y,x,dirchar) = self.findstart(m)
-        self.guard=Point(x,y)
-        self.dir=Point(0,-1)
-        self.mark(self.guard)
+        self.m=copy.deepcopy(m)
+        (y,x,dirchar) = self.findstart()
+        self.guard=Guard(Point(x,y),Point(0,-1))
+        self.mark(self.guard.pos)
         self.maxx = len(m[0])-1
         self.maxy = len(m)-1
+        self.cycleCount = 0
+        self.cycle = []
+        self.stepcnt=0
 
-    def findstart(self,s):
-        for i in range(len(s)):
-            for j in range(len(s[i])):
-                if s[i][j] == '^':
+    def findstart(self):
+        for i in range(len(self.m)):
+            for j in range(len(self.m[i])):
+                if self.m[i][j] == '^':
                     return (i,j,'^')
         return False
 
@@ -104,45 +117,7 @@ class Map:
             return True
         else: 
             return False
-        
-    def turnright(self):
-        if self.dir.x == 0:
-            self.dir.x = -self.dir.y
-            self.dir.y = 0
-        else:
-            self.dir.y = self.dir.x
-            self.dir.x = 0
 
-    def move(self):
-        newp = self.guard + self.dir
-        if self.pointoutside(newp):
-            return False 
-        if self.charAt(newp)  == '#':
-            self.turnright()
-            self.move()
-        else:
-            self.guard = newp
-            self.mark(self.guard)
-        return True
-    
-    def wouldbeloop(self):
-        self.tguard=Point(self.guard.x,self.guard.y)
-        self.startpos = Point(self.guard.x,self.guard.y)
-        self.startdir = Point(self.dir.x,self.dir.y)
-
-    def testmove(self):
-        newp = self.guard + self.dir
-        if self.pointoutside(newp):
-            return False 
-        if self.charAt(newp)  == '#':
-            self.turnright()
-            self.move()
-        else:
-            self.guard = newp
-            self.mark(self.guard)
-        return True
-    
-  #  def s
 
     def countDistinct(self):
         cnt=0
@@ -152,75 +127,123 @@ class Map:
                     cnt = cnt + 1
         return cnt
     
+    def move(self):
+        if self.stepcnt % 300 == 0:
+            print(self.stepcnt)
+        newp = self.guard.nextStep()
+        if self.pointoutside(newp):
+            return False 
+        if self.charAt(newp)  == '#':
+            self.guard.turnright()
+            self.move()
+        else:
+            self.guard.move()
+            self.mark(self.guard.pos)
+            self.stepcnt +=1
+            # if False and self.causes_cycle():
+            if self.causes_cycle():
+               self.cycleCount += 1
+               self.cycle.append(self.guard.nextStep()) 
+        return True
+    
+    def testmove(self,guard):
+        newp = guard.nextStep()
+        if self.pointoutside(newp):
+            return False 
+        if self.charAt(newp)  == '#':
+            # print(guard.dir)
+            guard.turnright()
+            # print(guard.dir) 
+        guard.move()
+        return True
+    
     def causes_cycle(self):
         # if right turn here puts me into a cycle, add position to cycle list
-        pass
+        newGuard = copy.deepcopy(self.guard)
+        newGuard.name='newGuard'
+        originalGuard = copy.deepcopy(self.guard)
+        originalGuard.name='originalGuard'
+        firstTime=True
+        newGuard.turnright()
+        guardset=set()
+        
 
-from collections import defaultdict
-
-class ObsticalMap():
-    def __init__(self,m):
-        self.obsticles=[]
-        self.yobsticles = defaultdict(list)
-        self.xobsticles = defaultdict(list)
-        for y in range(len(m)):
-            for x in range(len(m[y])):
-                self.obsticles.append(Point(x,y))
-                self.yobsticles[y].append(x)
-                self.xobsticles[x].append(y)
-        # sorting probably not necessary
-        for k,v in self.yobsticles:
-            v.sort()
-        for k,v in self.xobsticles:
-            v.sort()
-        self.m=m
-        self.maxx = len(m[0])-1
-        self.maxy = len(m)-1
+        while True:
     
-        # build y sparse obsticle map
-        # build x sparse obsticle map
+        #for i in range(100:
+            # print(newGuard.pos, self.guard.pos)
+            if newGuard.__repr__() in guardset: 
+                return(True)
+            guardset.add(newGuard.__repr__())
+            if self.pointoutside(newGuard.nextStep()):
+                return False
+            if newGuard == originalGuard and not firstTime:
+                return True
+            firstTime = False
+            x = self.testmove(newGuard)
+            if not(x):
+                print('ouch', newGuard, originalGuard)
+
+
+    def run(self):
+        while self.move():
+            pass
+        print(self.countDistinct(),self.cycleCount, self.stepcnt)
 
 
 
-def range_around(i,sl,mini,maxi):
-    # find range
-    # input of a sorted list of int. and a number.
-    # find the number below and above that number.
-    if len(sl)==0:
-        return (None,None)
-    assert(i>=mini )
-    assert(i <= maxi )
-    #TODO
-    l=None
-    h=None
-    for a in sl:
-        assert (i != a)
-        if a < i:
-            l = i
-        if not(h):
-            if a > i:
-                h = a
-                return l,h
-    return l,h        
+Map(s).run()
     
-mm=Map(s)
-    
-while mm.move():
-    pass
-print(mm.countDistinct())
-
-
-
 s = [list(x) for x in read_input()]
-mm=Map(s)
+ss = Map(s)
+ss.run()
     
-while mm.move():
-    pass
-print(mm.countDistinct())
+
+        
+# from collections import defaultdict
+
+# class ObsticalMap():
+#     def __init__(self,m):
+#         self.obsticles=[]
+#         self.yobsticles = defaultdict(list)
+#         self.xobsticles = defaultdict(list)
+#         for y in range(len(m)):
+#             for x in range(len(m[y])):
+#                 self.obsticles.append(Point(x,y))
+#                 self.yobsticles[y].append(x)
+#                 self.xobsticles[x].append(y)
+#         # sorting probably not necessary
+#         for k,v in self.yobsticles:
+#             v.sort()
+#         for k,v in self.xobsticles:
+#             v.sort()
+#         self.m=m
+#         self.maxx = len(m[0])-1
+#         self.maxy = len(m)-1
+    
+#         # build y sparse obsticle map
+#         # build x sparse obsticle map
 
 
-tst= [  ''' ''',
-        ''' ''']
 
-#
-#  def 
+# def range_around(i,sl,mini,maxi):
+#     # find range
+#     # input of a sorted list of int. and a number.
+#     # find the number below and above that number.
+#     if len(sl)==0:
+#         return (None,None)
+#     assert(i>=mini )
+#     assert(i <= maxi )
+#     #TODO
+#     l=None
+#     h=None
+#     for a in sl:
+#         assert (i != a)
+#         if a < i:
+#             l = i
+#         if not(h):
+#             if a > i:
+#                 h = a
+#                 return l,h
+#     return l,h        
+    

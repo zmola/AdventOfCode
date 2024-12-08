@@ -49,11 +49,17 @@ def findAnti_2(p,q,m):
     f = Fraction(diff[0],diff[1])
     diff=(f.numerator,f.denominator)
     rtn=[]
-    rtn.append(psub(q,diff))
-    rtn.append(padd(p, diff))
+    pp=p
+    while insideMap(m,pp):
+        rtn.append(pp)
+        pp=psub(pp,diff)
+    pp = padd(p,diff)
+    while insideMap(m,pp):
+        rtn.append(pp)
+        pp=padd(pp,diff)
     return rtn
 
-findAnti = findAnti_1
+findAnti = findAnti_2
 
 samp ='''............
 ........0...
@@ -69,7 +75,7 @@ samp ='''............
 ............'''.split('\n')
 
 s = [list(x) for x in samp]
-# s = [list(x) for x in read_input()]
+s = [list(x) for x in read_input()]
 # pprint(s)
 
 ants = collections.defaultdict(list)

@@ -215,6 +215,18 @@ def buildList(m):
         for i in range(len(m[j])):
             if m[j][i]=='X':
                olist.append((i,j))
+print(len(olist))
+oo = set(olist)
+oo.discard((ss.startpoint.x,ss.startpoint.y))
+olist=list(oo)
+print(len(olist))
+
+for obsticle in olist:
+    news=copy.deepcopy(s)
+    news[obsticle(1)][obsticle(0)] = '#'
+    ss = Map(news)
+    ss.run()
+    break
 
 #TODO: make run capture the cycles
 # TODO: store guard locations for where you have been, to capture cycles.
@@ -224,11 +236,13 @@ def buildList(m):
 # TODO: for every obsticle location, run the map.
 #       if obsticle causes cycle, add 1 to cycle count
         
-buildList(ss.m)
-olist.sort()
-olist.remove((ss.startpoint.x,ss.startpoint.y))
-print('olsit.len:',len(olist))
-i=0
+# buildList(ss.m)
+# olist.sort()
+# olist.remove((ss.startpoint.x,ss.startpoint.y))
+# print('olsit.len:',len(olist))
+# i=0
+
+
 # for x,y in olist:
 #   print(i)
 #   t=copy.deepcopy(s)

@@ -3,6 +3,8 @@ import itertools
 import collections
 from pprint import pprint
 from fractions import Fraction
+import operator
+from functools import reduce
 
 day = 8
 part = 1
@@ -26,13 +28,32 @@ def psub(p,q):
 def padd(p,q):
     return (p[0]+q[0],p[1]+q[1])
 
+
+def insideMap(m,p):
+    # m is a list of lists (array)
+    # p is tupple (point)
+    rtn = p[0] >= 0 and p[1] >= 0
+    rtn = rtn and p[0] < len(m[0])  and p[1] < len(m) 
+    return rtn
+    
 def findAnti_1(p,q,m):
     diff=psub(p,q)
     rtn=[]
     rtn.append(psub(q,diff))
     rtn.append(padd(p, diff))
+    rtn = [r for r in rtn if insideMap(m,r)]
     return rtn
 
+def findAnti_2(p,q,m):
+    diff=psub(p,q)
+    f = Fraction(diff[0],diff[1])
+    diff=(f.numerator,f.denominator)
+    rtn=[]
+    rtn.append(psub(q,diff))
+    rtn.append(padd(p, diff))
+    return rtn
+
+findAnti = findAnti_1
 
 samp ='''............
 ........0...
@@ -48,7 +69,7 @@ samp ='''............
 ............'''.split('\n')
 
 s = [list(x) for x in samp]
-#s = [list(x) for x in read_input()]
+# s = [list(x) for x in read_input()]
 # pprint(s)
 
 ants = collections.defaultdict(list)
@@ -59,37 +80,30 @@ for j in range(len(s)):
 #pprint(ants)
 #pprint(s)
 
-# def 
+def findAntiNodes(s,antennalist):
+    combos= list(itertools.combinations(antennalist,2))
+    # why can I use findAnti inside without a global statement
+    x=  [findAnti(*x,s) for x in combos]
+    x = reduce(operator.add,x)
+    return x
+
+
+
 antcombos = dict()
-for k,v in ants.items():
-    print(k,v)
-    antcombos[k]= list(itertools.combinations(v,2))
-
-pprint(antcombos)
-#print(ants[0])
-
 antAnti = collections.defaultdict(set)
 
-
-import operator
-from functools import reduce
-
-def insideMap(m,p):
-    # m is a list of lists (array)
-    # p is tupple (point)
-    rtn = p[0] >= 0 and p[1] >= 0
-    rtn = rtn and p[0] < len(m[0])  and p[1] < len(m) 
-    return rtn
-    
-
-for k,v in antcombos.items():
+for k,v in ants.items():
     print(k,v)
-    x=  [findAnti_1(*x,s) for x in v]
-    x = reduce(operator.add,x)
-    print(k,":  ", x)
-    antAnti[k] = [xx for xx in x if insideMap(s,xx)]
+    # antcombos[k]= list(itertools.combinations(v,2))
+    # # print(k,v)
+    # x=  [findAnti(*x,s) for x in v]
+    # x = reduce(operator.add,x)
+    # print(k,":  ", x)
+    antAnti[k] = findAntiNodes(s, v)
 
+pprint(antcombos)
 pprint(antAnti)
+
 nodes = list()
 for k,v in antAnti.items():
     nodes = nodes + v

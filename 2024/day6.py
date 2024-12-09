@@ -1,4 +1,10 @@
 import copy
+import operator
+from functools import reduce
+
+from pprint import pprint
+import collections
+import itertools
 
 day=6
 part=1
@@ -39,7 +45,9 @@ class Point:
         return(f"Point({self.x},{self.y})")
     
     def __str__(self):
-        return(f"({self.x},{self.y})")
+        x = self.x
+        y = self.y
+        return(f"({x},{y})")
     
     def addToMe(self,point):
         self.x=point.x
@@ -54,6 +62,9 @@ class Point:
     
     def __eq__(self,p):
         return (self.x==p.x) and (self.y == p.y)
+    
+    def toTuple(self):
+       return (self.x,self.y)
 
 class Guard(Point):
     def __init__(self, pos: Point, dir: Point):
@@ -87,6 +98,9 @@ class Guard(Point):
             self.dir.x = 0
         # print('turn',self.dir)
 
+    def toTuple(self):
+        return (self.pos.toTuple(), self.dir.toTuple())
+
 
 class Map:
 
@@ -95,11 +109,14 @@ class Map:
         (y,x,dirchar) = self.findstart()
         self.startpoint=Point(x,y)
         self.guard=Guard(Point(x,y),Point(0,-1))
+        self.startdir = Point(0,-1)
         self.mark(self.guard.pos)
+        #
         self.maxx = len(m[0])-1
         self.maxy = len(m)-1
         self.cycleCount = 0
         self.cycle = []
+        self.steps = set()
         self.stepcnt=0
         self.blocklist = list()
 
@@ -140,93 +157,81 @@ class Map:
         #     print(self.stepcnt)
 
         newp = self.guard.nextStep()
+        # print(self.guard.__repr__())
         if self.pointoutside(newp):
-            return False 
+            #print('outofbounds')
+            return False        
+        if self.guard.toTuple() in self.steps:
+            #print("alreadyVisitied")
+            self.cycleCount = self.cycleCount +1
+            return False
         if self.charAt(newp)  == '#':
+            #print("turnRight")
+            self.steps.add(self.guard.toTuple())
             self.guard.turnright()
             self.move()
-        else:
-            self.guard.move()
-            self.mark(self.guard.pos)
-            self.stepcnt +=1
-            # self.causes_cycle()
+            return True
+        #else:
+        self.steps.add(self.guard.toTuple())
+        self.guard.move()
+        self.mark(self.guard.pos)
+        self.stepcnt +=1
+        # self.causes_cycle()
         return True
     
-    def testmove(self,guard):
-        newp = guard.nextStep()
-        if self.pointoutside(newp):
-            return False 
-        if self.charAt(newp)  == '#' or newp == self.baricade:
-            # print(guard.dir)
-            guard.turnright()
-            # print(guard.dir) 
-        guard.move()
-        return True
-    
-    def causes_cycle_old(self):
-        # if right turn here puts me into a cycle, add position to cycle list
-        newGuard = copy.deepcopy(self.guard)
-        newGuard.name='newGuard'
-        originalGuard = copy.deepcopy(self.guard)
-        originalGuard.name='originalGuard'
-        firstTime=True
-        self.baricade = newGuard.nextStep()
-        newGuard.turnright()
-        guardset=set()
-        guardset.add(originalGuard.__repr__())
-
-        while True:
-            # if self.stepcnt == 532:
-            #     print(newGuard.pos,newGuard.dir,len(guardset))
-            if self.pointoutside(newGuard.nextStep()):
-                return False
-            firstTime = False
-            x = self.testmove(newGuard)
-            if not(x):
-                print('ouch', newGuard, originalGuard)
-            if newGuard.__repr__() in guardset: 
-                self.cycleCount += 1
-                self.cycle.append(self.guard.nextStep())
-                return True
-            guardset.add(newGuard.__repr__())
-             
-
     def run(self):
         while self.move():
             pass
-        x=set([(p.x,p.y) for p in self.cycle])
-        x.discard((self.startpoint.x,self.startpoint.y))
+        # x=set([(p.x,p.y) for p in self.cycle])
+        # x.discard((self.startpoint.x,self.startpoint.y))
     
-        print(self.countDistinct(),self.cycleCount, len(x), self.stepcnt)
-        #old_p = self.blocklist[0] 
+        return self.cycleCount > 0 
+    
 
 
-
-Map(s).run()
+ss = Map(s)
     
 s = [list(x) for x in read_input()]
 ss = Map(s)
 ss.run()
+print( ss.countDistinct(),
+               ss.cycleCount, 
+               len(ss.cycle), 
+               ss.stepcnt)
+
+
+
+m = copy.deepcopy (ss.m)
+ss.m[ss.startpoint.y][ss.startpoint.x] = '^'
+# for l in m:
+#     print(''.join(l))
+
     
-olist = list()
+
 def buildList(m):
-    global olist
+    olist = []
     for j in range(len(m)):
         for i in range(len(m[j])):
             if m[j][i]=='X':
                olist.append((i,j))
-print(len(olist))
-oo = set(olist)
-oo.discard((ss.startpoint.x,ss.startpoint.y))
-olist=list(oo)
-print(len(olist))
+    oo = set(olist)
+    oo.discard((ss.startpoint.x,ss.startpoint.y))
+    olist=list(oo)
+    return olist           
 
+olist = buildList(m)
+cycles=[]
+i = 0
 for obsticle in olist:
+    if not i % 200: 
+        print(f"i = {i}, cnt= {len(cycles)}")
     news=copy.deepcopy(s)
-    news[obsticle(1)][obsticle(0)] = '#'
+    news[obsticle[1]][obsticle[0]] = '#'
     ss = Map(news)
-    ss.run()
-    break
+    if ss.run():
+        cycles.append(object)
+    i = i+1
+print(f"num_cycles = {len(cycles)}")
 
 #TODO: make run capture the cycles
 # TODO: store guard locations for where you have been, to capture cycles.
